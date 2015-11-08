@@ -2,7 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="group_14.software_engineering_project_group_14_bles" >
 
+    <!--  My location permssion for GPS feature  -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--  For test  -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="22" />
 
     <application
         android:allowBackup="true"

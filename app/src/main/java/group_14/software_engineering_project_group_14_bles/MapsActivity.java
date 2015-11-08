@@ -1,8 +1,8 @@
 package group_14.software_engineering_project_group_14_bles;
 
-import android.support.v4.app.FragmentActivity;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,17 +27,33 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
-import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+//for creating array list
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener, OnMapLongClickListener,OnMapReadyCallback {
+//for GPS feature
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import android.support.v4.app.ActivityCompat;
+import android.support.annotation.NonNull;
 
+//use for display information
+import android.widget.Toast;
+
+
+public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener,
+        OnMapLongClickListener,
+        OnMapReadyCallback,
+        OnMyLocationButtonClickListener,
+        ActivityCompat.OnRequestPermissionsResultCallback{
+
+    //init parameters
     private GoogleMap mMap;
 
     private static final LatLng Windsor = new LatLng(42.289810, -82.999313);
@@ -46,32 +62,27 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
     public static final double RADIUS_OF_EARTH_METERS = 6371009;
 
-//    private static final int WIDTH_MAX = 50;
-//
-//    private static final int HUE_MAX = 360;
-//
-//    private static final int ALPHA_MAX = 255;
-
     private List<DraggableCircle> mCircles = new ArrayList<DraggableCircle>(1);
 
-//    private SeekBar mColorBar;
-//
-//    private SeekBar mAlphaBar;
-//
-//    private SeekBar mWidthBar;
-//
     private int mStrokeColor = Color.BLACK;
 
     private int mFillColor;
+
+    //init parameters for GPS features
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    private boolean mPermissionDenied = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
         mapFragment.getMapAsync(this);
     }
 
@@ -80,6 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
+
         // move the camera to Windsor
 //      mMap.moveCamera(CameraUpdateFactory.newLatLng(Windsor));
 //      mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -93,9 +105,87 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 //        mCircles.add(circle);
 
         // Move the map so that it is centered on the initial circle
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Windsor, 50f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Windsor, 10f));
+
+        //for gps feature
+        mMap.setOnMyLocationButtonClickListener(this);
+        enableMyLocation();
     }
 
+    /**
+     * The following contexts are for GPS feature development
+     */
+
+    //Enables the My Location layer if the fine location permission has been granted.
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+        else if (mMap != null)
+        {
+            // Access to the location has been granted to the app.
+            mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    /**
+     *需要修改此方法来控制GPS定位后下一步功能
+     */
+    @Override
+    public boolean onMyLocationButtonClick() {
+        //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return;
+        }
+
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION))
+        {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation();
+        }
+        else
+        {
+            // Display the missing permission error dialog when the fragments resume.
+            mPermissionDenied = true;
+        }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        if (mPermissionDenied) {
+            // Permission was not granted, display error dialog.
+            showMissingPermissionError();
+            mPermissionDenied = false;
+        }
+    }
+
+    /**
+     * Displays a dialog with error message explaining that the location permission is missing.
+     */
+    private void showMissingPermissionError() {
+        PermissionUtils.PermissionDeniedDialog
+                .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    /**
+     *The following contexts are for Adding marker and defined circles
+     */
     private class DraggableCircle {
 
         private final Marker centerMarker;
@@ -162,6 +252,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
             return false;
         }
 
+        //modified circle attributes
 //        public void onStyleChange() {
 //            circle.setStrokeWidth(mWidthBar.getProgress());
 //            circle.setFillColor(mFillColor);
@@ -185,6 +276,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         return result[0];
     }
 
+    /*override methods for interfaces*/
+
+    //handle drag action
     @Override
     public void onMarkerDragStart(Marker marker) {
         onMarkerMoved(marker);
@@ -208,11 +302,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         }
     }
 
-    /*
-    不应该存在两个circle! 需要更改！！！！
-     */
     @Override
     public void onMapLongClick(LatLng point) {
+
         // We know the center, let's place the outline at a point 3/4 along the view.
 //        View view = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
 //                .getView();
@@ -220,18 +312,18 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 //        LatLng radiusLatLng = mMap.getProjection().fromScreenLocation(new Point(
 //                view.getHeight() * 3 / 4, view.getWidth() * 3 / 4));
 
-        // ok create it
+        // create new circle and marker
         DraggableCircle circle = new DraggableCircle(point, DEFAULT_RADIUS);
 
-        //test
+        //avoid the situation existing two circles on the map at the same time
         for (DraggableCircle draggableCircle : mCircles) {
             draggableCircle.centerMarker.remove();
             draggableCircle.circle.remove();
             draggableCircle.radiusMarker.remove();
         }
 
+        //clear up the array list
         mCircles.clear();
-
         mCircles.add(circle);
     }
 
