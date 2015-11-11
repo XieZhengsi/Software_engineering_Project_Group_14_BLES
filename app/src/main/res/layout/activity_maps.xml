@@ -14,9 +14,20 @@
 
     <fragment
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="462dp"
     android:id="@+id/map"
     tools:context=".MapsActivity"
     android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+    <ToggleButton
+        android:id="@+id/togglebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textOn="On"
+        android:textOff="Off"
+        android:onClick="onToggleClicked"
+        android:text="FireStation"
+        android:checked="true" />
+
 
 </LinearLayout>

@@ -11,28 +11,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 //Import for drawing circle on map
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 //for creating array list
 import java.util.ArrayList;
@@ -40,11 +29,20 @@ import java.util.List;
 
 //for GPS feature
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
-//use for display information
-import android.widget.Toast;
+
+
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ToggleButton;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener,
@@ -55,6 +53,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
     //init parameters
     private GoogleMap mMap;
+
 
     private static final LatLng Windsor = new LatLng(42.289810, -82.999313);
 
@@ -73,6 +72,13 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
     private boolean mPermissionDenied = false;
 
+    public Marker mark1;
+    public Marker mark2;
+    public Marker mark3;
+    public Marker mark4;
+    public Marker mark5;
+    public Marker mark6;
+    public Marker mark7;
 
 
     @Override
@@ -83,7 +89,11 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+
         mapFragment.getMapAsync(this);
+
+
+
     }
 
 
@@ -107,9 +117,53 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         // Move the map so that it is centered on the initial circle
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Windsor, 10f));
 
+
         //for gps feature
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
+
+
+        Polygon polygon = mMap.addPolygon(new PolygonOptions()
+                .add(new LatLng(42.256350, -83.114807),
+                        new LatLng(42.308929, -83.080475),
+                        new LatLng(42.323145, -83.045112),
+                        new LatLng(42.333044, -82.989151),
+                        new LatLng(42.341673, -82.955505),
+                        new LatLng(42.352330, -82.924263),
+                        new LatLng(42.337613, -82.913620),
+                        new LatLng(42.335582, -82.896454),
+                        new LatLng(42.312737, -82.895767),
+                        new LatLng(42.276422, -82.898857),
+                        new LatLng(42.274643, -82.904693),
+                        new LatLng(42.242373, -82.906753),
+                        new LatLng(42.248981, -82.959282),
+                        new LatLng(42.234747, -82.990181),
+                        new LatLng(42.252793, -83.036873),
+                        new LatLng(42.254826, -83.073608),
+                        new LatLng(42.246694, -83.077728),
+                        new LatLng(42.255842, -83.114807))
+                .strokeColor(Color.RED)
+                .strokeWidth(2)
+                .fillColor(Color.HSVToColor(10, new float[]{155, 1, 1})));
+
+
+        LatLng l1 = new LatLng(42.3118656219999,-83.0334707361);
+        LatLng l2 = new LatLng(42.3068574909,-82.9869316877999);
+        LatLng l3 = new LatLng(42.2531537838999,-83.0239833768);
+        LatLng l4 = new LatLng(42.2821369613999,-83.0156976205999);
+        LatLng l5 = new LatLng(42.2999231237999,-83.0628378768);
+        LatLng l6 = new LatLng(42.3215477939,-82.9386634266);
+        LatLng l7 = new LatLng(42.2692392288999,-82.9662277009);
+
+        mark1 = mMap.addMarker(new MarkerOptions().position(l1));
+        mark2 = mMap.addMarker(new MarkerOptions().position(l2));
+        mark3 = mMap.addMarker(new MarkerOptions().position(l3));
+        mark4 = mMap.addMarker(new MarkerOptions().position(l4));
+        mark5 = mMap.addMarker(new MarkerOptions().position(l5));
+        mark6 = mMap.addMarker(new MarkerOptions().position(l6));
+        mark7 = mMap.addMarker(new MarkerOptions().position(l7));
+
+
     }
 
     /**
@@ -313,18 +367,48 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 //                view.getHeight() * 3 / 4, view.getWidth() * 3 / 4));
 
         // create new circle and marker
-        DraggableCircle circle = new DraggableCircle(point, DEFAULT_RADIUS);
 
-        //avoid the situation existing two circles on the map at the same time
-        for (DraggableCircle draggableCircle : mCircles) {
-            draggableCircle.centerMarker.remove();
-            draggableCircle.circle.remove();
-            draggableCircle.radiusMarker.remove();
-        }
 
-        //clear up the array list
-        mCircles.clear();
-        mCircles.add(circle);
+            DraggableCircle circle = new DraggableCircle(point, DEFAULT_RADIUS);
+
+            //avoid the situation existing two circles on the map at the same time
+            for (DraggableCircle draggableCircle : mCircles) {
+                draggableCircle.centerMarker.remove();
+                draggableCircle.circle.remove();
+                draggableCircle.radiusMarker.remove();
+            }
+
+            //clear up the array list
+            mCircles.clear();
+            mCircles.add(circle);
+
+
     }
+    public void onToggleClicked(View view) {
+
+            if (((ToggleButton) view).isChecked()) {
+                mark1.setVisible(true);
+                mark2.setVisible(true);
+                mark3.setVisible(true);
+                mark4.setVisible(true);
+                mark5.setVisible(true);
+                mark6.setVisible(true);
+                mark7.setVisible(true);
+                // handle toggle on
+            } else {
+                mark1.setVisible(false);
+                mark2.setVisible(false);
+                mark3.setVisible(false);
+                mark4.setVisible(false);
+                mark5.setVisible(false);
+                mark6.setVisible(false);
+                mark7.setVisible(false);
+            }
+
+    }
+
+
+
+
 
 }
