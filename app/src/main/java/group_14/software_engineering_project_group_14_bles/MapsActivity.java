@@ -1,84 +1,142 @@
 package group_14.software_engineering_project_group_14_bles;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.location.LocationManager;
 import android.os.Bundle;
+//==============================================================
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+//==============================================================
 //Import for drawing circle on map
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
+//==============================================================
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
+//==============================================================
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-
+//==============================================================
 //for creating array list
+//==============================================================
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
+//==============================================================
 //for GPS feature
+//==============================================================
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+//==============================================================
+// button testing
+//==============================================================
 import android.support.v4.app.ActivityCompat;
 import android.support.annotation.NonNull;
-
-//use for display information
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
-
+import android.widget.ToggleButton;
+//==============================================================
+//floating buttom testing
+//==============================================================
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+//==============================================================
+//for marker animation
+//==============================================================
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
+//
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
 public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener,
         OnMapLongClickListener,
+        OnMarkerClickListener,
+        OnInfoWindowClickListener,
         OnMapReadyCallback,
         OnMyLocationButtonClickListener,
-        ActivityCompat.OnRequestPermissionsResultCallback{
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        NavigationView.OnNavigationItemSelectedListener{
 
+    //==============================================================
     //init parameters
+    //==============================================================
     private GoogleMap mMap;
 
     private static final LatLng Windsor = new LatLng(42.289810, -82.999313);
 
-    private static final double DEFAULT_RADIUS = 10000;
-
-    public static final double RADIUS_OF_EARTH_METERS = 6371009;
-
     private List<DraggableCircle> mCircles = new ArrayList<DraggableCircle>(1);
-
-    private int mStrokeColor = Color.BLACK;
-
-    private int mFillColor;
-
+    //==============================================================
     //init parameters for GPS features
+    //==============================================================
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private boolean mPermissionDenied = false;
-
-
+    //==============================================================
+    //mark testing
+    //==============================================================
+    public Marker mark1;
+    public Marker mark2;
+    public Marker mark3;
+    public Marker mark4;
+    public Marker mark5;
+    public Marker mark6;
+    public Marker mark7;
+    //==============================================================
+    //latlngs list of Windsor
+    //==============================================================
+    private ArrayList<LatLng> latlngs = new ArrayList();
+    private Polygon_Contain poly;
+    //==============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -91,31 +149,86 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-
-        // move the camera to Windsor
-//      mMap.moveCamera(CameraUpdateFactory.newLatLng(Windsor));
-//      mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
         mMap.setOnMarkerDragListener(this);
         mMap.setOnMapLongClickListener(this);
-
-        mFillColor = Color.HSVToColor(10, new float[]{1, 1, 1});
-
-//        DraggableCircle circle = new DraggableCircle(Windsor, DEFAULT_RADIUS);
-//        mCircles.add(circle);
-
+        mMap.setOnInfoWindowClickListener(this);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        //==============================================================
         // Move the map so that it is centered on the initial circle
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Windsor, 10f));
-
+        //==============================================================
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Windsor, 12f));
+        //==============================================================
         //for gps feature
+        //==============================================================
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
+        //==============================================================
+        //highlight the area of Windsor
+        //==============================================================
+        latlngs.add(new LatLng(42.256350, -83.114807));
+        latlngs.add(new LatLng(42.308929, -83.080475));
+        latlngs.add(new LatLng(42.323145, -83.045112));
+        latlngs.add(new LatLng(42.333044, -82.989151));
+        latlngs.add(new LatLng(42.341673, -82.955505));
+        latlngs.add(new LatLng(42.352330, -82.924263));
+        latlngs.add(new LatLng(42.337613, -82.913620));
+        latlngs.add(new LatLng(42.335582, -82.896454));
+        latlngs.add(new LatLng(42.312737, -82.895767));
+        latlngs.add(new LatLng(42.276422, -82.898857));
+        latlngs.add(new LatLng(42.274643, -82.904693));
+        latlngs.add(new LatLng(42.242373, -82.906753));
+        latlngs.add(new LatLng(42.248981, -82.959282));
+        latlngs.add(new LatLng(42.234747, -82.990181));
+        latlngs.add(new LatLng(42.252793, -83.036873));
+        latlngs.add(new LatLng(42.254826, -83.073608));
+        latlngs.add(new LatLng(42.246694, -83.077728));
+        latlngs.add(new LatLng(42.255842, -83.114807));
+        //==============================================================
+        //draw the area of Windsor and highlight it
+        //==============================================================
+        PolygonOptions polygons = new PolygonOptions()
+            .strokeColor(Color.RED)
+            .strokeWidth(2)
+            .fillColor(Color.HSVToColor(50, new float[]{210, 100, 100}));
+
+        for (LatLng l : latlngs){
+            polygons.add(l);
+        }
+        mMap.addPolygon(polygons);
+
+        //==============================================================
+        //testing for highlight facilities in Windsor
+        //==============================================================
+        LatLng l1 = new LatLng(42.3118656219999,-83.0334707361);
+        LatLng l2 = new LatLng(42.3068574909,-82.9869316877999);
+        LatLng l3 = new LatLng(42.2531537838999,-83.0239833768);
+        LatLng l4 = new LatLng(42.2821369613999,-83.0156976205999);
+        LatLng l5 = new LatLng(42.2999231237999,-83.0628378768);
+        LatLng l6 = new LatLng(42.3215477939,-82.9386634266);
+        LatLng l7 = new LatLng(42.2692392288999,-82.9662277009);
+
+        mark1 = mMap.addMarker(new MarkerOptions().position(l1));
+        mark2 = mMap.addMarker(new MarkerOptions().position(l2));
+        mark3 = mMap.addMarker(new MarkerOptions().position(l3));
+        mark4 = mMap.addMarker(new MarkerOptions().position(l4));
+        mark5 = mMap.addMarker(new MarkerOptions().position(l5));
+        mark6 = mMap.addMarker(new MarkerOptions().position(l6));
+        mark7 = mMap.addMarker(new MarkerOptions().position(l7));
+
+        //==============================================================
+        //testing
+        //==============================================================
+        List<LineofPolygon> lines = new ArrayList();
+        for (int i = 1;i<latlngs.size();i++){
+            lines.add(new LineofPolygon(latlngs.get(i-1),latlngs.get(i)));
+        }
+        poly = new Polygon_Contain(lines);
+        //===============================================================
     }
 
-    /**
-     * The following contexts are for GPS feature development
-     */
-
+    //==============================================================
+    //The following contexts are for GPS feature development
+    //==============================================================
     //Enables the My Location layer if the fine location permission has been granted.
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -131,16 +244,11 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
             mMap.setMyLocationEnabled(true);
         }
     }
-
-    /**
-     *需要修改此方法来控制GPS定位后下一步功能
-     */
+    //==============================================================
+    //Need to be modified for next step
+    //==============================================================
     @Override
     public boolean onMyLocationButtonClick() {
-        //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
         return false;
     }
 
@@ -175,109 +283,17 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         }
     }
 
-    /**
-     * Displays a dialog with error message explaining that the location permission is missing.
-     */
+    //==============================================================
+    //Displays a dialog with error message explaining that the location permission is missing.
+    //==============================================================
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
-    /**
-     *The following contexts are for Adding marker and defined circles
-     */
-    private class DraggableCircle {
-
-        private final Marker centerMarker;
-
-        private final Marker radiusMarker;
-
-        private final Circle circle;
-
-        private double radius;
-
-        public DraggableCircle(LatLng center, double radius) {
-            this.radius = radius;
-            centerMarker = mMap.addMarker(new MarkerOptions()
-                    .position(center)
-                    .draggable(true));
-
-            radiusMarker = mMap.addMarker(new MarkerOptions()
-                    .position(toRadiusLatLng(center, radius))
-                    .draggable(true)
-                    .icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_AZURE)));
-
-            circle = mMap.addCircle(new CircleOptions()
-                    .center(center)
-                    .radius(radius)
-                    .strokeWidth(10)//modified unsure
-                    .strokeColor(mStrokeColor)
-                    .fillColor(mFillColor));
-        }
-
-        public DraggableCircle(LatLng center, LatLng radiusLatLng) {
-
-            this.radius = toRadiusMeters(center, radiusLatLng);
-
-            centerMarker = mMap.addMarker(new MarkerOptions()
-                    .position(center)
-                    .draggable(true));
-
-            radiusMarker = mMap.addMarker(new MarkerOptions()
-                    .position(radiusLatLng)
-                    .draggable(true)
-                    .icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_AZURE)));
-
-            circle = mMap.addCircle(new CircleOptions()
-                    .center(center)
-                    .radius(radius)
-                    .strokeWidth(5)
-                    .strokeColor(mStrokeColor)
-                    .fillColor(mFillColor));
-        }
-
-        public boolean onMarkerMoved(Marker marker) {
-            if (marker.equals(centerMarker)) {
-                circle.setCenter(marker.getPosition());
-                radiusMarker.setPosition(toRadiusLatLng(marker.getPosition(), radius));
-                return true;
-            }
-            if (marker.equals(radiusMarker)) {
-                radius = toRadiusMeters(centerMarker.getPosition(), radiusMarker.getPosition());
-                circle.setRadius(radius);
-                return true;
-            }
-            return false;
-        }
-
-        //modified circle attributes
-//        public void onStyleChange() {
-//            circle.setStrokeWidth(mWidthBar.getProgress());
-//            circle.setFillColor(mFillColor);
-//            circle.setStrokeColor(mStrokeColor);
-//        }
-
-    }
-
-    /** Generate LatLng of radius marker */
-    private static LatLng toRadiusLatLng(LatLng center, double radius) {
-        double radiusAngle = Math.toDegrees(radius / RADIUS_OF_EARTH_METERS) /
-                Math.cos(Math.toRadians(center.latitude));
-        return new LatLng(center.latitude, center.longitude + radiusAngle);
-    }
-
-    //calculate the distance between center and radius marker
-    private static double toRadiusMeters(LatLng center, LatLng radius) {
-        float[] result = new float[1];
-        Location.distanceBetween(center.latitude, center.longitude,
-                radius.latitude, radius.longitude, result);
-        return result[0];
-    }
-
+    //==============================================================
     /*override methods for interfaces*/
-
+    //==============================================================
     //handle drag action
     @Override
     public void onMarkerDragStart(Marker marker) {
@@ -295,36 +311,139 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     }
 
     private void onMarkerMoved(Marker marker) {
-        for (DraggableCircle draggableCircle : mCircles) {
-            if (draggableCircle.onMarkerMoved(marker)) {
-                break;
-            }
-        }
+//        for (DraggableCircle draggableCircle : mCircles) {
+//            if (draggableCircle.onMarkerMoved(marker)) {
+//                break;
+//            }
+//        }
     }
 
     @Override
     public void onMapLongClick(LatLng point) {
 
-        // We know the center, let's place the outline at a point 3/4 along the view.
-//        View view = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-//                .getView();
-//
-//        LatLng radiusLatLng = mMap.getProjection().fromScreenLocation(new Point(
-//                view.getHeight() * 3 / 4, view.getWidth() * 3 / 4));
+//        if (poly.contains(point))
+//        {
+            // create new circle and marker
+            DraggableCircle circle = new DraggableCircle(point,mMap);
 
-        // create new circle and marker
-        DraggableCircle circle = new DraggableCircle(point, DEFAULT_RADIUS);
+            //avoid the situation existing two circles on the map at the same time
+            for (DraggableCircle draggableCircle : mCircles) {
+                draggableCircle.centerMarker.remove();
+                draggableCircle.circle.remove();
+//              draggableCircle.radiusMarker.remove();
+            }
 
-        //avoid the situation existing two circles on the map at the same time
-        for (DraggableCircle draggableCircle : mCircles) {
-            draggableCircle.centerMarker.remove();
-            draggableCircle.circle.remove();
-            draggableCircle.radiusMarker.remove();
-        }
-
-        //clear up the array list
-        mCircles.clear();
-        mCircles.add(circle);
+            mCircles.clear();
+            mCircles.add(circle);
+            //animated marker added
+            Marker_bouncing.Bouncing(circle.centerMarker,mMap);
+//        }
+//        else
+//        {
+//            Toast.makeText(this, "This point is out of Windsor", Toast.LENGTH_SHORT).show();
+//        }
     }
 
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+//        Toast.makeText(this, "Evaluation Begin", Toast.LENGTH_SHORT).show();
+        Intent it = new Intent(MapsActivity.this, ScrollingActivity.class);
+        startActivity(it);
+    }
+
+
+    //==============================================================
+    /*button function setting*/
+    //==============================================================
+    private boolean checkReady() {
+        if (mMap == null) {
+            Toast.makeText(this, "Map is not ready", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Called when the zoom in button (the one with the +) is clicked.
+     */
+    public void onZoomIn(View view) {
+        if (!checkReady()) {
+            return;
+        }
+
+        mMap.moveCamera(CameraUpdateFactory.zoomIn());
+    }
+
+    /**
+     * Called when the zoom out button (the one with the -) is clicked.
+     */
+    public void onZoomOut(View view) {
+        if (!checkReady()) {
+            return;
+        }
+        mMap.moveCamera(CameraUpdateFactory.zoomOut());
+    }
+
+    //========================================================
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camara) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
