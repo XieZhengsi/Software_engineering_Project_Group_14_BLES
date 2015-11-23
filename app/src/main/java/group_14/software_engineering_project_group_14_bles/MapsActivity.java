@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -40,6 +42,7 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 //==============================================================
 //for GPS feature
 //==============================================================
@@ -113,6 +116,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     public Marker mark5;
     public Marker mark6;
     public Marker mark7;
+    public Marker[] markers = new Marker[7];
+
+    public static ArrayList<LatLng> fireStationLocationList = new ArrayList<LatLng>();
     //==============================================================
     //latlngs list of Windsor
     //==============================================================
@@ -199,6 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         //==============================================================
         //testing for highlight facilities in Windsor
         //==============================================================
+        /*
         LatLng l1 = new LatLng(42.3118656219999,-83.0334707361);
         LatLng l2 = new LatLng(42.3068574909,-82.9869316877999);
         LatLng l3 = new LatLng(42.2531537838999,-83.0239833768);
@@ -214,6 +221,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         mark5 = mMap.addMarker(new MarkerOptions().position(l5));
         mark6 = mMap.addMarker(new MarkerOptions().position(l6));
         mark7 = mMap.addMarker(new MarkerOptions().position(l7));
+        */
 
         //==============================================================
         //testing
@@ -224,6 +232,23 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         }
         poly = new Polygon_Contain(lines);
         //===============================================================
+        //add Marker
+        //===============================================================
+        Context context = this;
+
+        ArrayList<String> backList = new ArrayList<String>();
+        ArrayList<ArrayList<String>> backListInfo = new ArrayList<ArrayList<String>>();
+        DataOperation dataOperation = new DataOperation();
+        backList = dataOperation.getFacilities(context, "FireStation");
+        backListInfo = dataOperation.getFacilityInfo(context, backList);
+        double x = Double.parseDouble(backListInfo.get(0).get(2));
+        double y = Double.parseDouble(backListInfo.get(0).get(3));
+        LatLng testLatLng = new LatLng(x,y);
+
+        mark1 = mMap.addMarker((new MarkerOptions().position(testLatLng)));
+
+
+
     }
 
     //==============================================================
