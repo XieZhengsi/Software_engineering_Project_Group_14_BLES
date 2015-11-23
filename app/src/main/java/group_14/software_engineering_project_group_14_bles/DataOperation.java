@@ -3,6 +3,7 @@ package group_14.software_engineering_project_group_14_bles;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,27 @@ public class DataOperation
 
     }
 
+    public boolean loginAuthentication(Context context,String username,String userpass)
+    {
+        boolean loginstatus = false;
+        String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
+        Location_ini.NewUserInfo.USER_PASS};
+        UserDbHelper userDbHelper = new UserDbHelper(context);
+        Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,null,null);
+        if(CR.moveToFirst())
+        {
+            do
+            {
+                if(username.equals(CR.getString(1))&& (userpass.equals(CR.getString(2))))
+                {
+                    loginstatus = true;
+                }
 
+            }while(CR.moveToNext());
+        }
+
+        return loginstatus;
+    }
 
 
 
