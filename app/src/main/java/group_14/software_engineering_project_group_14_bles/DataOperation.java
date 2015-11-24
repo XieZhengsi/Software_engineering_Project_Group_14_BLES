@@ -3,6 +3,7 @@ package group_14.software_engineering_project_group_14_bles;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,11 +76,99 @@ public class DataOperation
 
     }
 
+    public boolean loginAuthentication(Context context,String username,String userpass)
+    {
+        boolean loginstatus = false;
+        String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
+        Location_ini.NewUserInfo.USER_PASS};
+        UserDbHelper userDbHelper = new UserDbHelper(context);
+        Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,null,null);
+        if(CR.moveToFirst())
+        {
+            do
+            {
+                if(username.equals(CR.getString(1))&& (userpass.equals(CR.getString(2))))
+                {
+                    loginstatus = true;
+                }
+
+            }while(CR.moveToNext());
+        }
+
+        return loginstatus;
+    }
+
+    public ArrayList<String> getUserInfo(Context context,String backID)
+    {
+        ArrayList<String> userInfoList = new ArrayList<String>();
+
+        UserDbHelper userDbHelper;
+        userDbHelper = new UserDbHelper(context);
+
+        String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
+                Location_ini.NewUserInfo.USER_PASS};
+
+        int i = 0;
+        Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,"user_id=?",new String[]{backID});
+
+        if(CR.moveToFirst())
+        {
+            do
+            {
+                userInfoList.add(CR.getString(0));
+                userInfoList.add(CR.getString(1));
+                userInfoList.add(CR.getString(2));
+                //double coordinate_x = Double.parseDouble(CR.getString(1));
+                //double coordinate_y = Double.parseDouble(CR.getString(2));
+                i++;
+                }while(CR.moveToNext());
+            }
 
 
 
+        return userInfoList;
+
+    }
+
+    public ArrayList<String> getRecordInfo(Context context,String backID)
+    {
+        ArrayList<String> recordInfoList = new ArrayList<String>();
+        UserDbHelper userDbHelper;
+        userDbHelper = new UserDbHelper(context);
 
 
+        String[] columns = {Location_ini.NewRecordInfo.RECORD_ID,Location_ini.NewRecordInfo.RECORD_USER_ID,
+                Location_ini.NewRecordInfo.RECORD_NAME, Location_ini.NewRecordInfo.RECORD_X,
+                Location_ini.NewRecordInfo.RECORD_Y, Location_ini.NewRecordInfo.RECORD_TYPE,
+                Location_ini.NewRecordInfo.RECORD_TIME,Location_ini.NewRecordInfo.RECORD_RADIUS,
+                Location_ini.NewRecordInfo.RECORD_SCORE};
+
+        int i = 0;
+        Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewRecordInfo.TABLE_NAME,columns,"record_user_id=?",new String[]{backID});
+
+        if(CR.moveToFirst())
+        {
+            do
+            {
+                recordInfoList.add(CR.getString(0));
+                recordInfoList.add(CR.getString(1));
+                recordInfoList.add(CR.getString(2));
+                recordInfoList.add(CR.getString(3));
+                recordInfoList.add(CR.getString(4));
+                recordInfoList.add(CR.getString(5));
+                recordInfoList.add(CR.getString(6));
+                recordInfoList.add(CR.getString(7));
+                recordInfoList.add(CR.getString(8));
+                recordInfoList.add(CR.getString(9));
+                //double coordinate_x = Double.parseDouble(CR.getString(1));
+                //double coordinate_y = Double.parseDouble(CR.getString(2));
+                i++;
+            }while(CR.moveToNext());
+        }
+
+        return recordInfoList;
+
+    }
 
 
 

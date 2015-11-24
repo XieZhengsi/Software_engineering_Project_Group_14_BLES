@@ -86,6 +86,8 @@ import android.view.animation.Interpolator;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
+import group_14.software_engineering_project_group_14_bles.evaluation.EvalDetailsActivity;
+
 public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener,
         OnMapLongClickListener,
         OnMarkerClickListener,
@@ -101,6 +103,10 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     private GoogleMap mMap;
 
     private static final LatLng Windsor = new LatLng(42.289810, -82.999313);
+
+    // The last point user selected for evaluation.
+    // Set default value to Windsor start point.
+    private LatLng lastEvalPoint = Windsor;
 
     private List<DraggableCircle> mCircles = new ArrayList<DraggableCircle>(1);
     //==============================================================
@@ -381,6 +387,10 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 //        {
 //            Toast.makeText(this, "This point is out of Windsor", Toast.LENGTH_SHORT).show();
 //        }
+
+
+        // Save the last evaluation point.
+        this.lastEvalPoint = point;
     }
 
     @Override
@@ -391,8 +401,14 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     @Override
     public void onInfoWindowClick(Marker marker) {
 //        Toast.makeText(this, "Evaluation Begin", Toast.LENGTH_SHORT).show();
-        Intent it = new Intent(MapsActivity.this, ScrollingActivity.class);
-        startActivity(it);
+//        Intent it = new Intent(MapsActivity.this, ScrollingActivity.class);
+//        startActivity(it);
+
+
+        // Start evaluation details activity.
+        Intent intent = new Intent(this, EvalDetailsActivity.class);
+        intent.putExtra(KeysOfExtra.MAIN_MAP_LAST_EVAL_POINT, this.lastEvalPoint);
+        startActivity(intent);
     }
 
 

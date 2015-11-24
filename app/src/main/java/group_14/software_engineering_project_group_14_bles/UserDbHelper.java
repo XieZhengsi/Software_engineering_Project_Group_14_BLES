@@ -26,9 +26,10 @@ public class UserDbHelper extends SQLiteOpenHelper
 
     private static final  String CREATE_QUERY_RECORD =
             "CREATE TABLE "+ Location_ini.NewRecordInfo.TABLE_NAME+"("+ Location_ini.NewRecordInfo.RECORD_ID+" TEXT,"+
-                    Location_ini.NewRecordInfo.RECORD_USER_ID+" TEXT,"+ Location_ini.NewRecordInfo.RECORD_X+" TEXT,"+
-                    Location_ini.NewRecordInfo.RECORD_Y+" TEXT,"+ Location_ini.NewRecordInfo.RECORD_TIME+" TEXT,"+
-                    Location_ini.NewRecordInfo.RECORD_TYPE+" TEXT);";
+                    Location_ini.NewRecordInfo.RECORD_USER_ID+" TEXT,"+Location_ini.NewRecordInfo.RECORD_NAME+" TEXT,"+
+                    Location_ini.NewRecordInfo.RECORD_X+" TEXT,"+ Location_ini.NewRecordInfo.RECORD_Y+" TEXT,"+
+                    Location_ini.NewRecordInfo.RECORD_TIME+" TEXT,"+ Location_ini.NewRecordInfo.RECORD_TYPE+" TEXT,"+
+                    Location_ini.NewRecordInfo.RECORD_RADIUS+" TEXT,"+ Location_ini.NewRecordInfo.RECORD_SCORE+" TEXT);";
 
     public UserDbHelper(Context context)
     {
@@ -60,27 +61,30 @@ public class UserDbHelper extends SQLiteOpenHelper
         Log.e("DATABASE OPERATION", "One row inserted.In Facility Table");
     }
 
-    public void addUserInformations(UserDbHelper userDbHelper,String id,String name,String pass)
+    public void addUserInformations(UserDbHelper userDbHelper,String user_id,String user_name,String user_pass)
     {
         SQLiteDatabase sqLiteDatabase = userDbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Location_ini.NewUserInfo.USER_ID,id);
-        contentValues.put(Location_ini.NewUserInfo.USER_NAME,name);
-        contentValues.put(Location_ini.NewUserInfo.USER_PASS,pass);
+        contentValues.put(Location_ini.NewUserInfo.USER_ID,user_id);
+        contentValues.put(Location_ini.NewUserInfo.USER_NAME,user_name);
+        contentValues.put(Location_ini.NewUserInfo.USER_PASS,user_pass);
         sqLiteDatabase.insert(Location_ini.NewUserInfo.TABLE_NAME, null, contentValues);
         Log.e("DATABASE OPERATION", "One row inserted.In User Table");
     }
 
-    public void addRecordInformations(UserDbHelper userDbHelper,String id,String user_id,String x,String y,String time,String type)
+    public void addRecordInformations(UserDbHelper userDbHelper,String record_id,String record_user_id,String record_name,String record_x,String record_y,String record_time,String record_type,String record_radius,String record_score)
     {
         SQLiteDatabase sqLiteDatabase = userDbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_ID,id);
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_USER_ID,user_id);
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_X,x);
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_Y,y);
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_TIME,time);
-        contentValues.put(Location_ini.NewRecordInfo.RECORD_TYPE,type);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_ID,record_id);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_USER_ID,record_user_id);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_NAME,record_name);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_X,record_x);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_Y,record_y);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_TIME,record_time);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_TYPE,record_type);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_RADIUS,record_radius);
+        contentValues.put(Location_ini.NewRecordInfo.RECORD_SCORE,record_score);
         sqLiteDatabase.insert(Location_ini.NewRecordInfo.TABLE_NAME, null, contentValues);
         Log.e("DATABASE OPERATION", "One row inserted.In Record Table");
     }
