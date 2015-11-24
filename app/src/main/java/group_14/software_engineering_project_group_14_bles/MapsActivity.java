@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -87,6 +88,7 @@ import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
 import group_14.software_engineering_project_group_14_bles.evaluation.EvalDetailsActivity;
+import group_14.software_engineering_project_group_14_bles.evaluation.EvalRecord;
 
 public class MapsActivity extends AppCompatActivity implements OnMarkerDragListener,
         OnMapLongClickListener,
@@ -96,27 +98,22 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         OnMyLocationButtonClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationView.OnNavigationItemSelectedListener{
-
     //==============================================================
     //init parameters
     //==============================================================
     private GoogleMap mMap;
-
     private static final LatLng Windsor = new LatLng(42.289810, -82.999313);
-
     // The last point user selected for evaluation.
     // Set default value to Windsor start point.
     private LatLng lastEvalPoint = Windsor;
-
     private List<DraggableCircle> mCircles = new ArrayList<DraggableCircle>(1);
     //==============================================================
     //init parameters for GPS features
     //==============================================================
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
     private boolean mPermissionDenied = false;
     //==============================================================
-    //mark testing
+    //mark testing?
     //==============================================================
     public Marker mark1;
     public Marker mark2;
@@ -136,39 +133,55 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     private AlertDialog.Builder builder;
     //==============================================================
+    MyApplication app = (MyApplication) getApplication();
+    //==============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        //===============================================================
+        // for setup navigation
+        //===============================================================
+        //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //setup drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        //setup drawer toggle
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //setup itemlistener to navigation
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        //===============================================================
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-
         //===============================================================
-        //MyApplication
+        //  MyApplication - identify whether user has login or not
         //===============================================================
         MyApplication app = (MyApplication) getApplication();
+
         if(!app.isLogin()){
             ImageView imageview = (ImageView) findViewById(R.id.imageView);
-            imageview.setImageResource(R.drawable.powered_by_google_dark);
+            imageview.setImageResource(R.drawable.ic_person_add_white_48dp);
+            imageview.setClickable(true);
+            imageview.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent it = new Intent(MapsActivity.this, LoginActivity.class);
+                    startActivity(it);
+                }
+            });
+
         }
-        //================================================================
     }
 
 
@@ -222,7 +235,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
             polygons.add(l);
         }
         mMap.addPolygon(polygons);
-
         //==============================================================
         //testing for highlight facilities in Windsor
         //==============================================================
@@ -243,7 +255,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         mark6 = mMap.addMarker(new MarkerOptions().position(l6));
         mark7 = mMap.addMarker(new MarkerOptions().position(l7));
         */
-
         //==============================================================
         //testing
         //==============================================================
@@ -259,18 +270,17 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
         ArrayList<String> backList = new ArrayList<String>();
         ArrayList<ArrayList<String>> backListInfo = new ArrayList<ArrayList<String>>();
+
         DataOperation dataOperation = new DataOperation();
+
         backList = dataOperation.getFacilities(context, "FireStation");
         backListInfo = dataOperation.getFacilityInfo(context, backList);
+
         double x = Double.parseDouble(backListInfo.get(0).get(2));
         double y = Double.parseDouble(backListInfo.get(0).get(3));
         LatLng testLatLng = new LatLng(x,y);
-
         mark1 = mMap.addMarker((new MarkerOptions().position(testLatLng)));
-
-
     }
-
     //==============================================================
     //The following contexts are for GPS feature development
     //==============================================================
@@ -296,7 +306,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     public boolean onMyLocationButtonClick() {
         return false;
     }
-
+    //==============================================================
+    //For GPS permission
+    //==============================================================
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -317,7 +329,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
             mPermissionDenied = true;
         }
     }
-
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
@@ -401,9 +412,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     @Override
     public void onInfoWindowClick(Marker marker) {
 //        Toast.makeText(this, "Evaluation Begin", Toast.LENGTH_SHORT).show();
-//        Intent it = new Intent(MapsActivity.this, ScrollingActivity.class);
-//        startActivity(it);
-
 
         // Start evaluation details activity.
         Intent intent = new Intent(this, EvalDetailsActivity.class);
@@ -480,27 +488,37 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
+        MyApplication app = (MyApplication) getApplication();
+
         int id = item.getItemId();
+        if (id == R.id.nav_Evaluation) {
+            Intent it = new Intent(this, MapsActivity.class);
+            startActivity(it);
+        } else if (id == R.id.nav_Records) {
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            if(!app.isLogin()){loginRequestDialog(item);}
+            else
+            {
+                Intent it = new Intent(this, EvalRecord.class);
+                startActivity(it);
+            }
+        } else if (id == R.id.nav_Setting) {
+            //not be created
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_about) {
+            //not be created
+        }  else if (id == R.id.nav_logout) {
+            //set NULL to the value of session
+            app.setValue("NULL");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    //==============================================================
+    // For setup dialog (need modify)
     //==============================================================
     public void showMultiChoiceDialog(View view) {
         builder=new AlertDialog.Builder(this);
@@ -519,6 +537,79 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
       builder.setCancelable(true);
         AlertDialog dialog=builder.create();
         dialog.show();
-
     }
+    //==============================================================
+    // Login require dialog
+    //==============================================================
+    private void loginRequestDialog(MenuItem view) {
+        builder=new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Message");
+        builder.setMessage("Please Login while you want to use this function ！");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+//                Toast.makeText(getApplicationContext(), "OK",Toast.LENGTH_SHORT).show();
+                Intent it = new Intent(MapsActivity.this, LoginActivity.class);
+                startActivity(it);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+//                Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setCancelable(true);
+        AlertDialog dialog=builder.create();
+        dialog.show();
+    }
+
+
+
+
+    //==============================================================
+    //==============================================================
+    // For snapshot testing
+    //==============================================================
+    //==============================================================
+    /**
+     * Called when the snapshot button is clicked.
+     */
+    public void onScreenshot(View view) {
+        takeSnapshot();
+    }
+
+    private void takeSnapshot() {
+        if (mMap == null) {
+            return;
+        }
+
+//        final ImageView snapshotHolder = (ImageView) findViewById(R.id.snapshot_holder);
+
+        final GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+            @Override
+            public void onSnapshotReady(Bitmap snapshot) {
+                // Callback is called from the main thread, so we can modify the ImageView safely.
+//                snapshotHolder.setImageBitmap(snapshot);
+            }
+        };
+
+//        if (mWaitForMapLoadCheckBox.isChecked()) {
+//            mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+//                @Override
+//                public void onMapLoaded() {
+//                    mMap.snapshot(callback);
+//                }
+//            });
+//        } else {
+//            mMap.snapshot(callback);
+//        }
+    }
+    //==============================================================
+    //==============================================================
+
+
 }

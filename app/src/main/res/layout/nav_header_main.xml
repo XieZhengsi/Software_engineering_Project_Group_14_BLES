@@ -11,13 +11,14 @@
 
     <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@android:drawable/sym_def_app_icon" android:id="@+id/imageView" />
+        android:src="@drawable/ic_person_white_48dp" android:id="@+id/imageView" />
 
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing" android:text="Zihe Zhang"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:paddingTop="@dimen/nav_header_vertical_spacing" android:text="User Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:id="@+id/UserName" />
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Retail" android:id="@+id/textView" />
+        android:text="Business Type" android:id="@+id/BusinessType" />
 
 </LinearLayout>
