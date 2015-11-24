@@ -28,10 +28,13 @@ public class Location_ini
     {
         public static final String RECORD_ID = "record_id";
         public static final String RECORD_USER_ID = "record_user_id";
+        public static final String RECORD_NAME = "record_name";
         public static final String RECORD_X = "record_x";
         public static final String RECORD_Y = "record_y";
         public static final String RECORD_TYPE = "record_type";
         public static final String RECORD_TIME = "record_time";
+        public static final String RECORD_RADIUS = "record_radius";
+        public static final String RECORD_SCORE = "record_score";
         public static final String TABLE_NAME = "record_info";
     }
 
