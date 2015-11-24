@@ -1,7 +1,9 @@
 package group_14.software_engineering_project_group_14_bles;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -61,6 +63,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
@@ -125,6 +128,8 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     private ArrayList<LatLng> latlngs = new ArrayList();
     private Polygon_Contain poly;
     //==============================================================
+    private AlertDialog.Builder builder;
+    //==============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +153,16 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        //===============================================================
+        //MyApplication
+        //===============================================================
+        MyApplication app = (MyApplication) getApplication();
+        if(!app.isLogin()){
+            ImageView imageview = (ImageView) findViewById(R.id.imageView);
+            imageview.setImageResource(R.drawable.powered_by_google_dark);
+        }
+        //================================================================
     }
 
 
@@ -246,7 +261,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         LatLng testLatLng = new LatLng(x,y);
 
         mark1 = mMap.addMarker((new MarkerOptions().position(testLatLng)));
-
 
 
     }
@@ -470,5 +484,25 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    //==============================================================
+    public void showMultiChoiceDialog(View view) {
+        builder=new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("Switch");
+
+        final String[] items={"Items_one","Items_two","Items_three"};
+        builder.setMultiChoiceItems(items, new boolean[]{true, false, true}, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                Toast.makeText(getApplicationContext(), "You clicked " + items[i] + " " + b, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+      builder.setCancelable(true);
+        AlertDialog dialog=builder.create();
+        dialog.show();
+
     }
 }
