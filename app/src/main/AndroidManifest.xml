@@ -50,6 +50,15 @@
             android:label="@string/title_activity_register"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+
+        <activity
+            android:name=".evaluation.EvalDetailsActivity"
+            android:label="@string/title_activity_eval_details" >
+        </activity>
+        <activity
+            android:name=".evaluation.EvalRecordPickerActivity" >
+        </activity>
+
     </application>
 
 </manifest>

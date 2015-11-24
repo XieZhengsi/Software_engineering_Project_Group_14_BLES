@@ -103,4 +103,16 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
+
+
+    <!-- Evaluation Details Activity -->
+    <string name="title_activity_eval_details">See what we get for you!</string>
+    <string name="eval_details_button_text_save">Save Evaluation</string>
+    <string name="eval_details_button_text_compare">Compare To Others</string>
+
+    <string name="eval_details_msg_map_not_ready">Map not ready</string>
+    <string name="eval_details_info_marker_snippet_see_below">See details below</string>
+
+    <string name="eval_point_marker_default_title">Your Selected Location</string>
+
 </resources>
