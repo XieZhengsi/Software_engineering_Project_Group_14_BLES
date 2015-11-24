@@ -44,6 +44,8 @@ public class LoginActivity extends Activity
                 {
                     Toast.makeText(getBaseContext(), "Login Success----\n Welcome "+NAME, Toast.LENGTH_LONG).show();
                     finish();
+                    MyApplication app = (MyApplication) getApplication();
+                    app.setValue(NAME);
                 }
                 else
                 {

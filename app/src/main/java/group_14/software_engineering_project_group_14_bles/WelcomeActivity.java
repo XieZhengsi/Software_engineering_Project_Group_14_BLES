@@ -21,6 +21,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
         //UserDbHelper userDbHelper;
         //int i =0;
         //userDbHelper = new UserDbHelper(context);
