@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,6 +30,7 @@ import java.util.UUID;
 
 import group_14.software_engineering_project_group_14_bles.KeysOfExtra;
 import group_14.software_engineering_project_group_14_bles.R;
+import group_14.software_engineering_project_group_14_bles.dataparsing.XMLDataParser;
 
 public class EvalDetailsActivity extends AppCompatActivity implements
         OnMapReadyCallback {
@@ -143,6 +145,7 @@ public class EvalDetailsActivity extends AppCompatActivity implements
 //        this.getPointAddress(this.evalPoint);
         this.initEvalPointMarker();
         this.updateEvalSummary(this.evalPoint.toString());
+
     }
 
 
@@ -201,6 +204,29 @@ public class EvalDetailsActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, EvalRecordPickerActivity.class);
         //intent.putExtra(KEY_LAST_EVAL_POINT, this.lastEvalPoint);
         startActivity(intent);
+    }
+
+    /**
+     *
+     */
+    public void saveCurrentEvalRecord(View view) {
+
+        ArrayList<ArrayList<String>> facility =
+                XMLDataParser.parseFacilityData(this, "community_centres.xml");
+
+        //String message = String.valueOf(facility.size());
+        String message = "";
+
+        for (ArrayList<String> list : facility) {
+            for (String s : list) {
+                message += s + " ";
+            }
+
+            message += "\n\n";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
     }
 
 

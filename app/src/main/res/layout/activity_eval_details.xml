@@ -60,7 +60,7 @@
             android:id="@+id/button_eval_details_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onGoToSydney"
+            android:onClick="saveCurrentEvalRecord"
             android:layout_weight="1"
             android:text="@string/eval_details_button_text_save" />
 
