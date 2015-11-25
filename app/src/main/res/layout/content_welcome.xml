@@ -20,6 +20,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
+    <!--
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
@@ -29,5 +30,8 @@
         android:layout_above="@+id/ToMap"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp" />
+
+    -->
+
 
 </RelativeLayout>
