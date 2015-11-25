@@ -22,7 +22,8 @@ public class UserDbHelper extends SQLiteOpenHelper
 
     private static final  String CREATE_QUERY_USER =
             "CREATE TABLE "+ Location_ini.NewUserInfo.TABLE_NAME+"("+ Location_ini.NewUserInfo.USER_ID+" TEXT,"+
-                    Location_ini.NewUserInfo.USER_NAME+" TEXT,"+ Location_ini.NewUserInfo.USER_PASS+" TEXT);";
+                    Location_ini.NewUserInfo.USER_NAME+" TEXT,"+ Location_ini.NewUserInfo.USER_PASS+" TEXT,"+
+                    Location_ini.NewUserInfo.User_TYPE+" TEXT);";
 
     private static final  String CREATE_QUERY_RECORD =
             "CREATE TABLE "+ Location_ini.NewRecordInfo.TABLE_NAME+"("+ Location_ini.NewRecordInfo.RECORD_ID+" TEXT,"+
@@ -61,13 +62,14 @@ public class UserDbHelper extends SQLiteOpenHelper
         Log.e("DATABASE OPERATION", "One row inserted.In Facility Table");
     }
 
-    public void addUserInformations(UserDbHelper userDbHelper,String user_id,String user_name,String user_pass)
+    public void addUserInformations(UserDbHelper userDbHelper,String user_id,String user_name,String user_pass,String user_type)
     {
         SQLiteDatabase sqLiteDatabase = userDbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Location_ini.NewUserInfo.USER_ID,user_id);
         contentValues.put(Location_ini.NewUserInfo.USER_NAME,user_name);
         contentValues.put(Location_ini.NewUserInfo.USER_PASS,user_pass);
+        contentValues.put(Location_ini.NewUserInfo.User_TYPE,user_type);
         sqLiteDatabase.insert(Location_ini.NewUserInfo.TABLE_NAME, null, contentValues);
         Log.e("DATABASE OPERATION", "One row inserted.In User Table");
     }
