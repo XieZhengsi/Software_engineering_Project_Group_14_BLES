@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -17,7 +18,8 @@ import java.util.Calendar;
 public class RegisterActivity extends Activity {
 
     EditText USER_NAME,USER_PASS,CON_PASS;
-    String user_name,user_pass,con_pass;
+    RadioButton radio_restaurant,radio_cafe,radio_retail;
+    String user_name,user_pass,con_pass,user_type;
     Button REG;
     Context context = this;
 
@@ -30,6 +32,11 @@ public class RegisterActivity extends Activity {
         USER_NAME = (EditText) findViewById(R.id.reg_user);
         USER_PASS = (EditText) findViewById(R.id.reg_pass) ;
         CON_PASS = (EditText) findViewById(R.id.con_pass);
+
+        radio_restaurant = (RadioButton)findViewById(R.id.radio_restaurant);
+        radio_cafe = (RadioButton)findViewById(R.id.radio_cafe);
+        radio_retail = (RadioButton)findViewById(R.id.radio_retail);
+
         REG = (Button) findViewById(R.id.user_reg);
 
         REG.setOnClickListener(new View.OnClickListener()
@@ -57,7 +64,7 @@ public class RegisterActivity extends Activity {
                     String userID = year.toString()+month.toString()+date.toString();
 
                     UserDbHelper userDbHelper = new UserDbHelper(context);
-                    userDbHelper.addUserInformations(userDbHelper,userID,user_name, user_pass);
+                    userDbHelper.addUserInformations(userDbHelper,userID,user_name, user_pass,user_type);
                     Toast.makeText(getBaseContext(), "Registration success", Toast.LENGTH_LONG).show();
                     finish();
 
@@ -69,5 +76,28 @@ public class RegisterActivity extends Activity {
 
 
     }
+
+    public void onRadioButtonClicked(View view)
+    {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_restaurant:
+                if (checked)
+                    user_type = radio_restaurant.getText().toString();
+                    break;
+            case R.id.radio_cafe:
+                if (checked)
+                    user_type = radio_cafe.getText().toString();
+                    break;
+            case R.id.radio_retail:
+                if (checked)
+                    user_type = radio_retail.getText().toString();
+                    break;
+        }
+    }
+
 
 }
