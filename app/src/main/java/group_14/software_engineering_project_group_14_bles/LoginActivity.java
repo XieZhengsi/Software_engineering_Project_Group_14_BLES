@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,7 +13,10 @@ import android.widget.Toast;
 public class LoginActivity extends Activity
 {
     Button Login;
-    EditText USERNAME,USERPASS;
+    AutoCompleteTextView USERNAME;
+    EditText USERPASS;
+//    EditText USERNAME,USERPASS;
+
     String username,userpass;
     Context context = this;
 
@@ -24,9 +28,12 @@ public class LoginActivity extends Activity
         /**
          * essential button initialization
          */
+
         Login = (Button)findViewById(R.id.b_login);
-        USERNAME = (EditText) findViewById(R.id.user_name);
+//        USERNAME = (EditText) findViewById(R.id.user_name);
+        USERNAME =  (AutoCompleteTextView)findViewById(R.id.user_name);
         USERPASS = (EditText) findViewById(R.id.user_pass);
+
         Login.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -34,16 +41,22 @@ public class LoginActivity extends Activity
             {
                 String NAME;
                 boolean loginStatus = false;
+
                 Toast.makeText(getBaseContext(), "Please wait...", Toast.LENGTH_LONG).show();
+
                 username = USERNAME.getText().toString();
                 userpass = USERPASS.getText().toString();
+
                 DataOperation dataOperation = new DataOperation();
                 loginStatus = dataOperation.loginAuthentication(context,username,userpass);
+
                 NAME = username;
+
                 if(loginStatus)
                 {
                     Toast.makeText(getBaseContext(), "Login Success----\n Welcome "+NAME, Toast.LENGTH_LONG).show();
                     finish();
+
                     MyApplication app = (MyApplication) getApplication();
                     app.setValue(NAME);
                 }
