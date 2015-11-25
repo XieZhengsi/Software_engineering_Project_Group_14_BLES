@@ -47,7 +47,7 @@ public class DataOperation
 
         String[] columns = {Location_ini.NewCoordinateInfo.LOCATION_ID,Location_ini.NewCoordinateInfo.LOCATION_ADDRESS,
                 Location_ini.NewCoordinateInfo.LOCATION_X, Location_ini.NewCoordinateInfo.LOCATION_Y,
-                Location_ini.NewCoordinateInfo.LOCATION_TYPE, Location_ini.NewCoordinateInfo.LOCATION_OTHERINFO};
+                Location_ini.NewCoordinateInfo.LOCATION_OTHERINFO, Location_ini.NewCoordinateInfo.LOCATION_TYPE};
         for(int j = 0; j < backList.size(); j++)
         {
             int i = 0;
