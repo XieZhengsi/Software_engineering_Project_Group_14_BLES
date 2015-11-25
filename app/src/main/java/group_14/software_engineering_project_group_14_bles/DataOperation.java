@@ -76,11 +76,48 @@ public class DataOperation
 
     }
 
+    public ArrayList<ArrayList<String>> getAllFacilityInfo(Context context)
+    {
+        ArrayList<ArrayList<String>> facilityInfoList = new ArrayList<ArrayList<String>>();
+        facilityInfoList.add(new ArrayList<String>());
+        UserDbHelper userDbHelper;
+        userDbHelper = new UserDbHelper(context);
+
+        String[] columns = {Location_ini.NewCoordinateInfo.LOCATION_ID,Location_ini.NewCoordinateInfo.LOCATION_ADDRESS,
+                Location_ini.NewCoordinateInfo.LOCATION_X, Location_ini.NewCoordinateInfo.LOCATION_Y,
+                Location_ini.NewCoordinateInfo.LOCATION_OTHERINFO, Location_ini.NewCoordinateInfo.LOCATION_TYPE};
+
+        int i = 0;
+        Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewCoordinateInfo.TABLE_NAME,columns,null,null);
+
+        if(CR.moveToFirst())
+        {
+            do
+            {
+                facilityInfoList.get(i).add(CR.getString(0));
+                facilityInfoList.get(i).add(CR.getString(1));
+                facilityInfoList.get(i).add(CR.getString(2));
+                facilityInfoList.get(i).add(CR.getString(3));
+                facilityInfoList.get(i).add(CR.getString(4));
+                facilityInfoList.get(i).add(CR.getString(5));
+                //double coordinate_x = Double.parseDouble(CR.getString(1));
+                //double coordinate_y = Double.parseDouble(CR.getString(2));
+                facilityInfoList.add(new ArrayList<String>());
+                i++;
+            }while(CR.moveToNext());
+        }
+
+
+        return facilityInfoList;
+
+    }
+
+
     public boolean loginAuthentication(Context context,String username,String userpass)
     {
         boolean loginstatus = false;
         String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
-        Location_ini.NewUserInfo.USER_PASS,Location_ini.NewUserInfo.User_TYPE};
+                Location_ini.NewUserInfo.USER_PASS,Location_ini.NewUserInfo.User_TYPE};
         UserDbHelper userDbHelper = new UserDbHelper(context);
         Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,null,null);
         if(CR.moveToFirst())
@@ -118,13 +155,12 @@ public class DataOperation
                 userInfoList.add(CR.getString(0));
                 userInfoList.add(CR.getString(1));
                 userInfoList.add(CR.getString(2));
+                userInfoList.add(CR.getString(3));
                 //double coordinate_x = Double.parseDouble(CR.getString(1));
                 //double coordinate_y = Double.parseDouble(CR.getString(2));
                 i++;
-                }while(CR.moveToNext());
-            }
-
-
+            }while(CR.moveToNext());
+        }
 
         return userInfoList;
 
