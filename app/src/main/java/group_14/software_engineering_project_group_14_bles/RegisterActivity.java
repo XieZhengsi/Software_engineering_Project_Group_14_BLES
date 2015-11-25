@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Random;
 
 public class RegisterActivity extends Activity {
 
@@ -57,11 +58,14 @@ public class RegisterActivity extends Activity {
                 }
                 else
                 {
+                    Random r = new Random();
+                    String rr = r.nextInt(99999)+"";
+
                     Calendar now = Calendar.getInstance();
                     Integer year = now.get(Calendar.YEAR);
                     Integer month = now.get(Calendar.MONTH);
                     Integer date = now.get(Calendar.DATE);
-                    String userID = year.toString()+month.toString()+date.toString();
+                    String userID = year.toString()+month.toString()+date.toString()+rr;
 
                     UserDbHelper userDbHelper = new UserDbHelper(context);
                     userDbHelper.addUserInformations(userDbHelper,userID,user_name, user_pass,user_type);

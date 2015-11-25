@@ -67,6 +67,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 //==============================================================
@@ -112,17 +113,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
-    //==============================================================
-    //mark testing?
-    //==============================================================
-    public Marker mark1;
-    public Marker mark2;
-    public Marker mark3;
-    public Marker mark4;
-    public Marker mark5;
-    public Marker mark6;
-    public Marker mark7;
-    public Marker[] markers = new Marker[7];
 
     public static ArrayList<LatLng> fireStationLocationList = new ArrayList<LatLng>();
     //==============================================================
@@ -152,7 +142,42 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
         //setup drawer toggle
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                //===============================================================
+                //  MyApplication - identify whether user has login or not
+                //===============================================================
+                MyApplication app = (MyApplication) getApplication();
+
+                if(!app.isLogin()){
+                    ImageView imageview = (ImageView) findViewById(R.id.imageView);
+                    imageview.setImageResource(R.drawable.ic_person_add_white_48dp);
+                    imageview.setClickable(true);
+                    imageview.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent it = new Intent(MapsActivity.this, RegisterActivity.class);
+                            startActivity(it);
+                        }
+                    });
+
+                }
+                else{
+                    ImageView imageview = (ImageView) findViewById(R.id.imageView);
+                    imageview.setImageResource(R.drawable.ic_person_white_48dp);
+                    //===============================================================
+                    //for modifiying textview
+                    //===============================================================
+                    TextView username = (TextView) findViewById(R.id.UserName);
+                    TextView businesstype = (TextView) findViewById(R.id.BusinessType);
+                    username.setText("test");
+                    businesstype.setText("test");
+                }
+            }
+        };
+
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -164,26 +189,8 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-        //===============================================================
-        //  MyApplication - identify whether user has login or not
-        //===============================================================
-        MyApplication app = (MyApplication) getApplication();
 
-        if(!app.isLogin()){
-            ImageView imageview = (ImageView) findViewById(R.id.imageView);
-            imageview.setImageResource(R.drawable.ic_person_add_white_48dp);
-            imageview.setClickable(true);
-            imageview.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent it = new Intent(MapsActivity.this, LoginActivity.class);
-                    startActivity(it);
-                }
-            });
-
-        }
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap)
@@ -268,18 +275,26 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         //===============================================================
         Context context = this;
 
-        ArrayList<String> backList = new ArrayList<String>();
         ArrayList<ArrayList<String>> backListInfo = new ArrayList<ArrayList<String>>();
+        ArrayList<Marker> markers = new ArrayList<Marker>();
 
+        //database operation
         DataOperation dataOperation = new DataOperation();
 
-        backList = dataOperation.getFacilities(context, "FireStation");
-        backListInfo = dataOperation.getFacilityInfo(context, backList);
+        backListInfo = dataOperation.getAllFacilityInfo(context);
 
-        double x = Double.parseDouble(backListInfo.get(0).get(2));
-        double y = Double.parseDouble(backListInfo.get(0).get(3));
-        LatLng testLatLng = new LatLng(x,y);
-        mark1 = mMap.addMarker((new MarkerOptions().position(testLatLng)));
+//        Toast.makeText(this,""+backListInfo.size(),Toast.LENGTH_LONG).show();
+
+        for(int i = 0; i<backListInfo.size()-1;i++)
+        {
+//            double x = Double.parseDouble(backListInfo.get(0).get(2));
+//            double y = Double.parseDouble(backListInfo.get(0).get(3));
+            double x = Double.parseDouble(backListInfo.get(i).get(2));
+            double y = Double.parseDouble(backListInfo.get(i).get(3));
+
+            LatLng testLatLng = new LatLng(x, y);
+            markers.add(mMap.addMarker((new MarkerOptions().position(testLatLng))));
+        }
     }
     //==============================================================
     //The following contexts are for GPS feature development
@@ -511,6 +526,13 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         }  else if (id == R.id.nav_logout) {
             //set NULL to the value of session
             app.setValue("NULL");
+            //===============================================================
+            //for modifiying textview
+            //===============================================================
+            TextView username = (TextView) findViewById(R.id.UserName);
+            TextView businesstype = (TextView) findViewById(R.id.BusinessType);
+            username.setText("userName");
+            businesstype.setText("BusinessType");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -566,9 +588,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         AlertDialog dialog=builder.create();
         dialog.show();
     }
-
-
-
 
     //==============================================================
     //==============================================================
