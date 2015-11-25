@@ -47,7 +47,7 @@ public class DataOperation
 
         String[] columns = {Location_ini.NewCoordinateInfo.LOCATION_ID,Location_ini.NewCoordinateInfo.LOCATION_ADDRESS,
                 Location_ini.NewCoordinateInfo.LOCATION_X, Location_ini.NewCoordinateInfo.LOCATION_Y,
-                Location_ini.NewCoordinateInfo.LOCATION_TYPE, Location_ini.NewCoordinateInfo.LOCATION_OTHERINFO};
+                Location_ini.NewCoordinateInfo.LOCATION_OTHERINFO, Location_ini.NewCoordinateInfo.LOCATION_TYPE};
         for(int j = 0; j < backList.size(); j++)
         {
             int i = 0;
@@ -80,7 +80,7 @@ public class DataOperation
     {
         boolean loginstatus = false;
         String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
-        Location_ini.NewUserInfo.USER_PASS};
+        Location_ini.NewUserInfo.USER_PASS,Location_ini.NewUserInfo.User_TYPE};
         UserDbHelper userDbHelper = new UserDbHelper(context);
         Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,null,null);
         if(CR.moveToFirst())
@@ -106,7 +106,7 @@ public class DataOperation
         userDbHelper = new UserDbHelper(context);
 
         String[] columns = {Location_ini.NewUserInfo.USER_ID,Location_ini.NewUserInfo.USER_NAME,
-                Location_ini.NewUserInfo.USER_PASS};
+                Location_ini.NewUserInfo.USER_PASS,Location_ini.NewUserInfo.User_TYPE};
 
         int i = 0;
         Cursor CR = userDbHelper.getInformations(userDbHelper,Location_ini.NewUserInfo.TABLE_NAME,columns,"user_id=?",new String[]{backID});

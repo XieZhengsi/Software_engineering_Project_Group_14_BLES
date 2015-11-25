@@ -21,6 +21,7 @@ public class Location_ini
         public static final String USER_ID = "user_id";
         public static final String USER_NAME = "user_name";
         public static final String USER_PASS = "user_pass";
+        public static final String User_TYPE = "user_type";
         public static final String TABLE_NAME = "user_info";
     }
 
