@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 //==============================================================
@@ -67,6 +68,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 //==============================================================
@@ -112,17 +114,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private boolean mPermissionDenied = false;
-    //==============================================================
-    //mark testing?
-    //==============================================================
-    public Marker mark1;
-    public Marker mark2;
-    public Marker mark3;
-    public Marker mark4;
-    public Marker mark5;
-    public Marker mark6;
-    public Marker mark7;
-    public Marker[] markers = new Marker[7];
 
     public static ArrayList<LatLng> fireStationLocationList = new ArrayList<LatLng>();
     //==============================================================
@@ -135,6 +126,12 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     MyApplication app = (MyApplication) getApplication();
     //==============================================================
+    Context context = this;
+    //==============================================================
+    ArrayList<Marker> markers = new ArrayList<Marker>();
+    //==============================================================
+    boolean[] bool;
+    String[] items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +149,42 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
         //setup drawer toggle
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                //===============================================================
+                //  MyApplication - identify whether user has login or not
+                //===============================================================
+                MyApplication app = (MyApplication) getApplication();
+
+                if(!app.isLogin()){
+                    ImageView imageview = (ImageView) findViewById(R.id.imageView);
+                    imageview.setImageResource(R.drawable.ic_person_add_white_48dp);
+                    imageview.setClickable(true);
+                    imageview.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent it = new Intent(MapsActivity.this, RegisterActivity.class);
+                            startActivity(it);
+                        }
+                    });
+
+                }
+                else{
+                    ImageView imageview = (ImageView) findViewById(R.id.imageView);
+                    imageview.setImageResource(R.drawable.ic_person_white_48dp);
+                    //===============================================================
+                    //for modifiying textview
+                    //===============================================================
+                    TextView username = (TextView) findViewById(R.id.UserName);
+                    TextView businesstype = (TextView) findViewById(R.id.BusinessType);
+                    username.setText("test");
+                    businesstype.setText("test");
+                }
+            }
+        };
+
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -165,25 +197,18 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
         mapFragment.getMapAsync(this);
         //===============================================================
-        //  MyApplication - identify whether user has login or not
-        //===============================================================
-        MyApplication app = (MyApplication) getApplication();
+        ArrayList<String> facilitiesType = FacilityCategory.getAllCategory();
 
-        if(!app.isLogin()){
-            ImageView imageview = (ImageView) findViewById(R.id.imageView);
-            imageview.setImageResource(R.drawable.ic_person_add_white_48dp);
-            imageview.setClickable(true);
-            imageview.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent it = new Intent(MapsActivity.this, LoginActivity.class);
-                    startActivity(it);
-                }
-            });
+        items = new String[facilitiesType.size()];
+        facilitiesType.toArray(items);
 
+        bool = new boolean[facilitiesType.size()];
+
+        for(int i =0;i<facilitiesType.size();i++){
+            bool[i] = false;
         }
-    }
 
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap)
@@ -268,18 +293,81 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         //===============================================================
         Context context = this;
 
-        ArrayList<String> backList = new ArrayList<String>();
         ArrayList<ArrayList<String>> backListInfo = new ArrayList<ArrayList<String>>();
+//        ArrayList<Marker> markers = new ArrayList<Marker>();
 
+        //database operation
         DataOperation dataOperation = new DataOperation();
 
-        backList = dataOperation.getFacilities(context, "FireStation");
-        backListInfo = dataOperation.getFacilityInfo(context, backList);
+        backListInfo = dataOperation.getAllFacilityInfo(context);
 
-        double x = Double.parseDouble(backListInfo.get(0).get(2));
-        double y = Double.parseDouble(backListInfo.get(0).get(3));
-        LatLng testLatLng = new LatLng(x,y);
-        mark1 = mMap.addMarker((new MarkerOptions().position(testLatLng)));
+//        Toast.makeText(this,""+backListInfo.size(),Toast.LENGTH_LONG).show();
+
+        for(int i = 0; i<backListInfo.size()-1;i++)
+        {
+            double x = Double.parseDouble(backListInfo.get(i).get(2));
+            double y = Double.parseDouble(backListInfo.get(i).get(3));
+            String type = backListInfo.get(i).get(5);
+
+            LatLng testLatLng = new LatLng(x, y);
+
+            markers.add(mMap.addMarker((new MarkerOptions()
+                    .position(testLatLng)
+                    .visible(false))));
+
+            switch(type){
+                case "Fire Station":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_verified_user_black_24dp));
+                    break;
+                case "School":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_library_black_24dp));
+                    break;
+                case "Voting Station":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_rate_review_black_24dp));
+                    break;
+                case "Airport":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_airport_black_24dp));
+                    break;
+                case "Community Center":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_convenience_store_black_24dp));
+                    break;
+                case "Hosiptal":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_hospital_black_24dp));
+                    break;
+                case "Park":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_parking_black_24dp));
+                    break;
+                case "Parking Lots Garages":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_parking_black_24dp));
+                    break;
+                case "Police Station":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_taxi_black_24dp));
+                    break;
+                case "Railway Station":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_directions_railway_black_24dp));
+                    break;
+                case "Tunnel Bridge":
+                    markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_local_movies_black_24dp));
+                    break;
+
+            }
+
+        }
+
+        ArrayList<String> backList1 = new ArrayList<String>();
+        ArrayList<ArrayList<String>> backListInfo1 = new ArrayList<ArrayList<String>>();
+        backList1 = dataOperation.getFacilities(context, "Fire Station");
+        backListInfo1 = dataOperation.getFacilityInfo(context,backList1);
+        for(int i =0; i<backListInfo1.size()-1;i++)
+        {
+            Toast.makeText(this,""+backListInfo.get(i).get(5),Toast.LENGTH_LONG).show();
+        }
+
+
+
+
+
+
     }
     //==============================================================
     //The following contexts are for GPS feature development
@@ -505,12 +593,18 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
             }
         } else if (id == R.id.nav_Setting) {
             //not be created
-
         } else if (id == R.id.nav_about) {
             //not be created
         }  else if (id == R.id.nav_logout) {
             //set NULL to the value of session
             app.setValue("NULL");
+            //===============================================================
+            //for modifiying textview
+            //===============================================================
+            TextView username = (TextView) findViewById(R.id.UserName);
+            TextView businesstype = (TextView) findViewById(R.id.BusinessType);
+            username.setText("userName");
+            businesstype.setText("BusinessType");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -522,19 +616,41 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     public void showMultiChoiceDialog(View view) {
         builder=new AlertDialog.Builder(this);
-        builder.setIcon(R.mipmap.ic_launcher);
-        builder.setTitle("Switch");
+        builder.setIcon(R.drawable.ic_drafts_black_36dp);
+        builder.setTitle("Facilities Type");
+        builder.setMultiChoiceItems(items, bool, new DialogInterface.OnMultiChoiceClickListener() {
 
-        final String[] items={"Items_one","Items_two","Items_three"};
-        builder.setMultiChoiceItems(items, new boolean[]{true, false, true}, new DialogInterface.OnMultiChoiceClickListener() {
+
             @Override
             public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                Toast.makeText(getApplicationContext(), "You clicked " + items[i] + " " + b, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "You clicked " + items[i] + " " + b, Toast.LENGTH_SHORT).show();
+                if(b)
+                {
+                    DataOperation dataOperation = new DataOperation();
+                    //database operation
+                    ArrayList<String> ids = dataOperation.getFacilities(context,items[i]);
+                    for(String s: ids)
+                    {
+                        int index=Integer.valueOf(s);
+                        bool[i] = true;
+                        markers.get(index).setVisible(true);
+                    }
+                }
+
+                else{
+                    DataOperation dataOperation = new DataOperation();
+                    ArrayList<String> ids = dataOperation.getFacilities(context,items[i]);
+                    for(String s: ids)
+                    {
+                        int index=Integer.valueOf(s);
+                        bool[i] = false;
+                        markers.get(index).setVisible(false);
+                    }
+                }
             }
         });
 
-
-      builder.setCancelable(true);
+        builder.setCancelable(true);
         AlertDialog dialog=builder.create();
         dialog.show();
     }
@@ -543,7 +659,7 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
     //==============================================================
     private void loginRequestDialog(MenuItem view) {
         builder=new AlertDialog.Builder(this);
-        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setIcon(R.drawable.ic_error_outline_black_24dp);
         builder.setTitle("Message");
         builder.setMessage("Please Login while you want to use this function ！");
 
@@ -566,9 +682,6 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
         AlertDialog dialog=builder.create();
         dialog.show();
     }
-
-
-
 
     //==============================================================
     //==============================================================
