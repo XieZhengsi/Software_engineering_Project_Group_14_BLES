@@ -354,15 +354,27 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
 
         }
 
-        ArrayList<String> backList1 = new ArrayList<String>();
+
+
+        String record = "1";
         ArrayList<ArrayList<String>> backListInfo1 = new ArrayList<ArrayList<String>>();
-        backList1 = dataOperation.getFacilities(context, "Fire Station");
-        backListInfo1 = dataOperation.getFacilityInfo(context,backList1);
+
+        backListInfo1 = dataOperation.getRecordInfo(context,record);
         for(int i =0; i<backListInfo1.size()-1;i++)
         {
-            Toast.makeText(this,""+backListInfo.get(i).get(5),Toast.LENGTH_LONG).show();
-        }
+            //markers.get(i).setVisible(true);
+            Toast.makeText(this,""+backListInfo1.get(i).get(0),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(1),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(2),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(3),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(4),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(5),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(6),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(7),Toast.LENGTH_LONG).show();
+            Toast.makeText(this,""+backListInfo1.get(i).get(8),Toast.LENGTH_LONG).show();
 
+        }
+        /**/
 
 
 
@@ -629,9 +641,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
                     DataOperation dataOperation = new DataOperation();
                     //database operation
                     ArrayList<String> ids = dataOperation.getFacilities(context,items[i]);
-                    for(String s: ids)
+                    for(int j = 0; j < ids.size() ; j++)
                     {
-                        int index=Integer.valueOf(s);
+                        int index=Integer.valueOf(ids.get(j))-1;
                         bool[i] = true;
                         markers.get(index).setVisible(true);
                     }
@@ -640,9 +652,9 @@ public class MapsActivity extends AppCompatActivity implements OnMarkerDragListe
                 else{
                     DataOperation dataOperation = new DataOperation();
                     ArrayList<String> ids = dataOperation.getFacilities(context,items[i]);
-                    for(String s: ids)
+                    for(int j = 0; j < ids.size() ; j++)
                     {
-                        int index=Integer.valueOf(s);
+                        int index=Integer.valueOf(ids.get(j))-1;
                         bool[i] = false;
                         markers.get(index).setVisible(false);
                     }
