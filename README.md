@@ -11,7 +11,7 @@ Evaluation System (BLES) for small business in Windsor. The data for evaluating 
 location is provided by open-data and the algorithm we use in this system are based on the
 research within business location decision area.
 
-#ScreenShot
+# ScreenShot
 ![image](http://i.imgur.com/wqfVej2.png)
 ![image](http://i.imgur.com/tEHz867.png)
 ![image](http://i.imgur.com/AftNogL.png)
